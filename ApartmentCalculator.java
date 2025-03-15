@@ -19,9 +19,10 @@ public class ApartmentCalculator{
                 (new PrintWriter("result.txt"))) {
 
 
-            // вывод количества комнат
+            // вывод количества комнат на консоль
             System.out.println("Введите количество комнат в квартире:");
             int roomCount = sc.nextInt();
+             // вывод количества комнат в файл 
             writer.println("количество комнат в квартире: " + roomCount);
 
             double totalFloorArea = 0;
