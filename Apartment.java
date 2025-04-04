@@ -1,3 +1,4 @@
+import org.jetbrains.annotations.NotNull;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -8,53 +9,44 @@ import java.util.Scanner;
 
 public class Apartment {
 
-  private static final double ELECTRICITY_FACTOR = 3.3; // Константа для расчетов кабеля
-  private static final double WATER_FACTOR = 1.3; // Константа для водопровода
+  private static final double ELECTRICITY_FACTOR = 3; // Константа для расчетов кабеля
+  private static final double WATER_FACTOR = 1.1; // Константа для водопровода
 
 
+  // @SuppressWarnings("unused")
   public static void main (String[] args) throws IOException {
 	Scanner sc = new Scanner (System.in);
 	System.out.println ("Введите название вашей квартиры (например: Квартира №.....):");
 	String apartmentName = sc.nextLine ();
 
-
-	// Создаем файл с результатами с уникальным именем
-	String fileName = "result_" + LocalDateTime.now ().format (DateTimeFormatter.ofPattern ("yyyyMMdd_HHmmss")) + ".txt";
-	// Инициализация переменных для подсчета итогов
-	double totalApartmentArea = 0;
-	double totalWallArea = 0;
-	double totalFloorArea = 0;
-	double totalApartmentPerimeter = 0;
-	double totalWindowsSlopeLength = 0;
-	double totalDoorsSlopeLength = 0;
-	double totalWindowsArea = 0;
-	double totalDoorsArea = 0;
-	int totalNumberOfSockets = 0;
-	double totalCableLength = 0;
-	double totalWaterSockets = 0;
-	double totalWaterPipeLength = 0;
-
-	//БЛОК 1 ============================================================================================
 	try (PrintWriter writer = new PrintWriter (new FileWriter ("result.txt", false))) {
-	  //-------------------------------------------------------------------
+	// Инициализация переменных для подсчета итогов
+	  double totalApartmentArea = 0;
+	  double totalWallArea = 0;
+	  double totalFloorArea = 0;
+	  double totalApartmentPerimeter = 0;
+	  double totalWindowsSlopeLength = 0;
+	  double totalDoorsSlopeLength = 0;
+	  double totalWindowsArea = 0;
+	  double totalDoorsArea = 0;
+	  int totalNumberOfSockets = 0;
+	  double totalCableLength = 0;
+	  double totalWaterSockets = 0;
+	  double totalWaterPipeLength = 0;
+
+
 	  writer.println ();
 	  writer.println ("===== Новый запуск программы =====");
-	  writer.println (); // ещё одна пустая строка
-	  //и временную метку
-	  DateTimeFormatter dtf = DateTimeFormatter.ofPattern ("yyyy-MM-dd HH:mm:ss");
-	  writer.println ("Дата и время: " + LocalDateTime.now ().format (dtf));
+	  writer.println ();
+	  writer.println ("Дата и время: " + LocalDateTime.now ().format (DateTimeFormatter.ofPattern ("yyyy-MM-dd HH:mm:ss")));
 
 	  System.out.println ("ВВЕДИТЕ КОЛИЧЕСТВО КОМНАТ В КВАТИРЕ: ");
 	  int roomCount = safeInputInt (sc);
-
-	  writer.println ("кол-во комнат в квартире - " + roomCount);
-	  System.out.println ("Количество комнат в квартире: " + roomCount);
-
-	  //БЛОК 2 Общие переменные для квартиры================================================================
+	  sc.nextLine ();
 
 
 	  //-----БЛОК 2  -------------------------------------------------------------------------------------------------
-	  for (int i = 1; i <= roomCount; i++) {
+	  for (int r = 1; r <= roomCount; r++) {
 		System.out.println ("КОМНАТА СТАНДАРТНАЯ (прямоугольная) или нет введите (ДА) или (НЕТ):");
 		String isStandard = sc.nextLine ();
 
@@ -63,98 +55,111 @@ public class Apartment {
 
 
 		double wallArea, floorArea, roomPerimeter;
-		double length = 0;
-		double width = 0;
-		double height;
+		double length, width, height;
+
 		if (isStandard.equalsIgnoreCase ("да")) {
 		  // Прямоугольная комната
+		  //здесь данные берем со сканера
 		  System.out.println ("Введите длину комнаты (м):");
 		  length = safeInputDouble (sc);
+		  sc.nextLine ();
 		  System.out.println ("Введите ширину комнаты (м):");
 		  width = safeInputDouble (sc);
+		  sc.nextLine ();
 		  System.out.println ("Введите высоту комнаты (м):");
 		  height = safeInputDouble (sc);
+		  sc.nextLine ();
+		  // а здесь вызываем методы и данные оттуда берутся
 		  floorArea = calcFloorArea (length, width);
 		  wallArea = calcWallArea (length, width, height);
 		  roomPerimeter = calcRoomPerimeter (length, width);
 
 		} else {
 		  // Нестандартная комната
-		  floorArea = calcNonStandardFloorArea (sc);
+		  //здесь данные берем со сканера
 		  System.out.println ("Введите высоту стен (м):");
 		  height = safeInputDouble (sc);
+		  sc.nextLine ();
 		  System.out.println ("Введите суммарный периметр нестандартного помещения:");
 		  roomPerimeter = safeInputDouble (sc);
+		  sc.nextLine ();
+		  //а здесь мы сразу расчет сделали
 		  wallArea = roomPerimeter * height;
+		  // а здесь вызываем методы и данные оттуда берутся
+		  floorArea = calcNonStandardFloorArea (sc);
 		}
 
-		System.out.println ("Введите количество розеток (шт.):");
-		int roomNumberSockets = safeInputInt (sc);
-		System.out.println ("Введите расстояние от щитка до комнаты (м):");
-		double distanceBetweenRooms = safeInputDouble (sc);
-		double cableLengthInsideRoom = calculateCableLengthInsideRoom (roomPerimeter, roomNumberSockets, distanceBetweenRooms);
-
-
-		int roomWaterSockets = 0;
-		double roomWaterPipeLength = 0;
-		if (roomName.equals ("Кухня") || roomName.equals ("Ванна") || roomName.equals ("Туалет")) {
-		  System.out.println ("ведите кол-во водорозеток:");
-		  roomWaterSockets = safeInputInt (sc);
-		  roomWaterPipeLength = calcWaterPipeLength (roomPerimeter, roomWaterSockets);
-		}
 		//----------------------------------------------------------------------------------------------------------
-		// БЛОК 5 Обработка окон
-		System.out.println ("Введите количество окон:");
-		int windowsCount = safeInputInt (sc);
-
-		//int windowsCount = sc.nextInt ();
-		sc.nextLine (); // Очищает буфер перед следующим `nextLine`
-
+		// ОКНА
 		double roomWindowsArea = 0;
 		double roomWindowsSlopeLength = 0;
 		double openingWidth;
 		double openingHeight;
 
-		for (int j = 1; j <= windowsCount; j++) {
-		  System.out.println ("Введите ширину окна " + j + " (в метрах):");
+		System.out.println ("Введите количество окон:");
+		int windowsCount = safeInputInt (sc);
+		sc.nextLine ();
+
+		for (int w = 1; w <= windowsCount; w++) {
+		  System.out.println ("Введите ширину окна " + w + " (в метрах):");
 		  openingWidth = safeInputDouble (sc);
-		  // openingWidth = sc.nextDouble ();
-		  // sc.nextLine(); // Очищает буфер перед следующим `nextLine`
-		  System.out.println ("Введите высоту окна " + j + " (в метрах):");
+		  sc.nextLine ();
+		  System.out.println ("Введите высоту окна " + w + " (в метрах):");
 		  openingHeight = safeInputDouble (sc);
-		  // openingHeight = sc.nextDouble ();
-		  //  sc.nextLine(); // Очищает буфер перед следующим `nextLine`
+		  sc.nextLine ();
+
 		  roomWindowsArea += calcOpeningArea (openingWidth, openingHeight);
 		  roomWindowsSlopeLength += calcOpeningPerimeter (openingWidth, openingHeight);
 		}
 		//----------------------------------------------------------------------------
 		// БЛОК 6 Обработка дверей
-		System.out.println ("Введите количество дверей:");
-		int doorsCount = safeInputInt (sc);
-		//int doorsCount = sc.nextInt ();
-		//sc.nextLine(); // Очищает буфер перед следующим `nextLine`
-
 		double roomDoorsArea = 0;
 		double roomDoorsSlopeLength = 0;
 
-		for (int c = 1; c <= doorsCount; c++) {
-		  System.out.println ("Введите ширину двери " + c + " (в метрах):");
+		System.out.println ("Введите количество дверей:");
+		int doorsCount = safeInputInt (sc);
+		sc.nextLine ();
+
+		for (int d = 1; d <= doorsCount; d++) {
+		  System.out.println ("Введите ширину двери " + d + " (в метрах):");
 		  openingWidth = safeInputDouble (sc);
-		  // openingWidth = sc.nextDouble ();
-		  //  sc.nextLine(); // Очищает буфер перед следующим `nextLine`
-		  System.out.println ("Введите высоту двери " + c + " (в метрах):");
+		  sc.nextLine ();
+		  System.out.println ("Введите высоту двери " + d + " (в метрах):");
 		  openingHeight = safeInputDouble (sc);
-		  //openingHeight = sc.nextDouble ();
-		  // sc.nextLine(); // Очищает буфер перед следующим `nextLine`
+		  sc.nextLine ();
+
 		  roomDoorsArea += calcOpeningArea (openingWidth, openingHeight);
 		  roomDoorsSlopeLength += calcOpeningPerimeter (openingWidth, openingHeight);
 		}
-		double finalWallArea = wallArea - roomWindowsArea - roomDoorsArea;
 
+		double finalWallArea = wallArea - roomWindowsArea - roomDoorsArea;
+		//ЭЛЕКТРИКА
+		int roomNumberSockets;
+		double distanceBetweenRooms;
+		double cableLengthInsideRoom;
+
+		System.out.println ("Введите количество розеток (шт.):");
+		roomNumberSockets = safeInputInt (sc);
+		sc.nextLine ();
+		System.out.println ("Введите расстояние от щитка до комнаты (м):");
+		distanceBetweenRooms = safeInputDouble (sc);
+		sc.nextLine ();
+		cableLengthInsideRoom = calculateCableLengthInsideRoom (roomPerimeter, roomNumberSockets, distanceBetweenRooms);
+
+		//ВОДА
+		int roomWaterSockets = 0;
+		double roomWaterPipeLength = 0;
+
+		if (roomName.equals ("Кухня") || roomName.equals ("Ванна") || roomName.equals ("Туалет")) {
+		  System.out.println ("ведите кол-во водорозеток:");
+		  roomWaterSockets = safeInputInt (sc);
+		  sc.nextLine ();
+		  roomWaterPipeLength = calcWaterPipeLength (roomPerimeter, roomWaterSockets);
+		}
 		// Итоги по комнате
-		printRoomDetails (writer, roomName, floorArea, wallArea, roomPerimeter,
-			finalWallArea, roomWindowsArea, roomWindowsSlopeLength,
+		printRoomDetails (writer,roomName, floorArea, wallArea, roomPerimeter, roomWindowsArea, roomWindowsSlopeLength,
 			roomDoorsArea, roomDoorsSlopeLength, roomNumberSockets, cableLengthInsideRoom, roomWaterPipeLength, roomWaterSockets);
+
 
 		// Суммируем общие данные
 		totalApartmentArea += floorArea;
@@ -171,45 +176,44 @@ public class Apartment {
 		totalWaterPipeLength += roomWaterPipeLength;
 	  }
 	  //--------------------------------------------------------------------------------------------------
+	  // Итоговый отчет
+	  printApartmentDetails ( writer,apartmentName, totalApartmentArea, totalFloorArea,
+		  totalWallArea, totalApartmentPerimeter, totalWindowsArea, totalWindowsSlopeLength,
+		  totalDoorsArea, totalDoorsSlopeLength, totalNumberOfSockets, totalCableLength,
+		  totalWaterSockets, totalWaterPipeLength);
 
-	// Итоговый отчет
-	writeApartmentSummary (writer, apartmentName, totalApartmentArea, totalFloorArea, totalWallArea,
-		totalApartmentPerimeter, totalWindowsArea, totalWindowsSlopeLength,
-		totalDoorsArea, totalDoorsSlopeLength, totalNumberOfSockets, totalCableLength, totalWaterSockets, totalWaterPipeLength);
 
-
-  } catch(
-  IOException e)
-
-  {
-	System.out.println ("ошибка при записи в файл" + e.getMessage ());
-  }
+	} catch (IOException e) {
+	  System.out.println ("ошибка при записи в файл" + e.getMessage ());
+	}
 
 	sc.close ();
   }
 
-// Безопасный ввод целого числа
-private static int safeInputInt(Scanner sc) {
-  while (true) {
-	try {
-	  return sc.nextInt();
-	} catch (InputMismatchException e) {
-	  System.out.println("Ошибка ввода. Введите целое число.");
-	  sc.nextLine();
+
+  // Безопасный ввод целого числа
+  private static int safeInputInt (@NotNull Scanner sc) {
+	while (true) {
+	  try {
+		return sc.nextInt ();
+	  } catch (InputMismatchException e) {
+		System.out.println ("Ошибка ввода. Введите целое число.");
+		sc.nextLine ();
+	  }
 	}
   }
-}
-// Безопасный ввод числа с плавающей точкой
-private static double safeInputDouble(Scanner sc) {
-  while (true) {
-	try {
-	  return sc.nextDouble();
-	} catch (InputMismatchException e) {
-	  System.out.println("Ошибка ввода. Введите правильное число.");
-	  sc.nextLine();
+
+  // Безопасный ввод числа с плавающей точкой
+  private static double safeInputDouble (@NotNull Scanner sc) {
+	while (true) {
+	  try {
+		return sc.nextDouble ();
+	  } catch (InputMismatchException e) {
+		System.out.println ("Ошибка ввода. Введите правильное число.");
+		sc.nextLine ();
+	  }
 	}
   }
-}
 
 
   public static double calcFloorArea (double length, double width) {
@@ -225,10 +229,11 @@ private static double safeInputDouble(Scanner sc) {
   }
 
   public static double calculateCableLengthInsideRoom (double roomPerimeter, int sockets, double distanceBetweenRooms) {
-	return (sockets * (roomPerimeter / 3.3) + distanceBetweenRooms);
+	return (sockets * (roomPerimeter / ELECTRICITY_FACTOR) + distanceBetweenRooms);
   }
+
   public static double calcWaterPipeLength (double roomPerimeter, double sockets) {
-	return roomPerimeter / 1.3 * sockets ;
+	return roomPerimeter / WATER_FACTOR * sockets;
   }
 
   public static double calcOpeningPerimeter (double openingWidth, double openingHeight) {
@@ -291,50 +296,47 @@ private static double safeInputDouble(Scanner sc) {
 	System.out.println ("Общая площадь нестандартного помещения: " + totalArea + " м².");
 	return totalArea;
   }
+
+  private static void printRoomDetails ( PrintWriter writer, String roomName, double floorArea, double wallArea,
+										 double roomPerimeter, double roomWindowsArea, double roomWindowsSlopeLength,
+										 double roomDoorsArea, double roomDoorsSlopeLength, int roomNumberSockets,
+										 double cableLengthInsideRoom, double roomWaterPipeLength, double roomWaterSockets)
+  {
+
+	writer.println ("КОМНАТА: : " + roomName );
+	writer.println ("Общая площадь пола: " + floorArea + " м²");
+	writer.println ("Общая площадь стен: " + wallArea + " м²");
+	writer.println ("Общий периметр квартиры: " + roomPerimeter + " м");
+	writer.println ("Общая площадь окон: " + roomWindowsArea + " м²");
+	writer.println ("Общая длина откосов окон: " + roomWindowsSlopeLength + " м");
+	writer.println ("Общая площадь дверей: " + roomDoorsArea + " м²");
+	writer.println ("Общая длина откосов дверей: " + roomDoorsSlopeLength + " м");
+	writer.println ("Общее количество розеток: " + roomNumberSockets);
+	writer.println ("Общая длина кабеля для всех комнат: " + cableLengthInsideRoom + " м");
+	writer.println ("Общее количество водорозеток: " + roomWaterSockets);
+	writer.println ("Общая длина труб: " + roomWaterPipeLength + " м");
+	writer.println ();
+  }
+
+  private static void printApartmentDetails (PrintWriter writer, String apartmentName, double totalApartmentArea, double totalFloorArea,
+											  double totalWallArea, double totalApartmentPerimeter, double totalWindowsArea,
+											  double totalWindowsSlopeLength, double totalDoorsArea,
+											  double totalDoorsSlopeLength, int totalNumberOfSockets,
+											  double totalCableLength, double totalWaterSockets, double totalWaterPipeLength)
+  {
+	writer.println (" КВАРТИРА: " + apartmentName );
+	writer.println ("Общая площадь квартиры: " + totalApartmentArea + " м²");
+	writer.println ("Общая площадь пола: " + totalFloorArea + " м²");
+	writer.println ("Общая площадь стен: " + totalWallArea + " м²");
+	writer.println ("Общий периметр квартиры: " + totalApartmentPerimeter + " м");
+	writer.println ("Общая площадь окон: " + totalWindowsArea + " м²");
+	writer.println ("Общая длина откосов окон: " + totalWindowsSlopeLength + " м");
+	writer.println ("Общая площадь дверей: " + totalDoorsArea + " м²");
+	writer.println ("Общая длина откосов дверей: " + totalDoorsSlopeLength + " м");
+	writer.println ("Общее количество розеток: " + totalNumberOfSockets);
+	writer.println ("Общая длина кабеля для всех комнат: " + totalCableLength + " м");
+	writer.println ("Общее количество водорозеток: " + totalWaterSockets);
+	writer.println ("Общая длина труб: " + totalWaterPipeLength + " м");
+	writer.println ();
+  }
 }
-private static void printRoomDetails(PrintWriter writer, String roomName, double floorArea, double wallArea,
-									 double roomPerimeter, double finalWallArea, double roomWindowsArea,
-									 double roomWindowsSlopeLength, double roomDoorsArea, double roomDoorsSlopeLength,
-									 int roomNumberSockets, double cableLengthInsideRoom, double roomWaterPipeLength, double roomWaterSockets
-) {
-  writer.println("===== " + roomName + " =====");
-  writer.println("Площадь пола: " + floorArea + " м²");
-  writer.println("Площадь стен до вычета окон и дверей: " + wallArea + " м²");
-  writer.println("Площадь стен после вычета окон и дверей: " + finalWallArea + " м²");
-  writer.println("Периметр комнаты: " + roomPerimeter + " м");
-  writer.println("Площадь окон: " + roomWindowsArea + " м²");
-  writer.println("Длинна откосов окон: " + roomWindowsSlopeLength + " м");
-  writer.println("Площадь дверей: " + roomDoorsArea + " м²");
-  writer.println("Длина откосов дверей: " + roomDoorsSlopeLength + " м");
-  writer.println("Кол-во розеток: " + roomNumberSockets);
-  writer.println("Длина кабеля: " + cableLengthInsideRoom + " м");
-	writer.println("Кол-во водорозеток: " + roomWaterSockets);
-	writer.println("Длина труб: " + roomWaterPipeLength + " м");
-  writer.println();
-}
-
-// Итоговый отчет по квартире
-private static void writeApartmentSummary(PrintWriter writer, String apartmentName, double totalApartmentArea,
-										  double totalFloorArea, double totalWallArea, double totalApartmentPerimeter,
-										  double totalWindowsArea, double totalWindowsSlopeLength,
-										  double totalDoorsArea, double totalDoorsSlopeLength, int totalNumberOfSockets,
-										  double totalCableLength, double totalWaterSockets, double totalWaterPipeLength) {
-  writer.println("===== Итог по всей квартире: \"" + apartmentName + "\" =====");
-  writer.println("Общая площадь квартиры: " + totalApartmentArea + " м²");
-  writer.println("Общая площадь пола: " + totalFloorArea + " м²");
-  writer.println("Общая площадь стен: " + totalWallArea + " м²");
-  writer.println("Общий периметр квартиры: " + totalApartmentPerimeter + " м");
-  writer.println("Общая площадь окон: " + totalWindowsArea + " м²");
-  writer.println("Общая длина откосов окон: " + totalWindowsSlopeLength + " м");
-  writer.println("Общая площадь дверей: " + totalDoorsArea + " м²");
-  writer.println("Общая длина откосов дверей: " + totalDoorsSlopeLength + " м");
-  writer.println("Общее количество розеток: " + totalNumberOfSockets);
-  writer.println("Общая длина кабеля для всех комнат: " + totalCableLength + " м");
-  writer.println("Общее количество водорозеток: " + totalWaterSockets);
-  writer.println("Общая длина труб: " + totalWaterPipeLength + " м");
-  writer.println();
-}
-
-
-
-

@@ -12,5 +12,15 @@ public class Main {
             // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
             System.out.println("i = " + i);
         }
+
+
+    Apartment apartment = new Apartment();
+
+    // Вызываем метод main из класса Apartment
+        try {
+        apartment.main(args); // Здесь вызывается метод main из Apartment
+    } catch (Exception e) {
+        System.out.println("Ошибка выполнения: " + e.getMessage());
     }
+}
 }
