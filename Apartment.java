@@ -1,4 +1,5 @@
 import org.jetbrains.annotations.NotNull;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,7 +32,11 @@ public class Apartment {
 	  double totalDoorsArea = 0;
 	  int totalNumberOfSockets = 0;
 	  double totalCableLength = 0;
-	  double totalWaterSockets = 0;
+	  int totalSwitches = 0;
+	  double totalCableSwitches = 0;
+	  int totalLamps = 0;
+	  double totalCableLamps = 0;
+	  int totalWaterSockets = 0;
 	  double totalWaterPipeLength = 0;
 
 
@@ -134,10 +139,20 @@ public class Apartment {
 
 		double finalWallArea = wallArea - roomWindowsArea - roomDoorsArea;
 		//ЭЛЕКТРИКА
+		int roomSwitches;
+		double roomCableSwitches;
+		int roomLamps;
+		double roomCableLamps;
 		int roomNumberSockets;
 		double distanceBetweenRooms;
 		double cableLengthInsideRoom;
 
+		System.out.println ("введите кол-во выключателей (шт.): ");
+		roomSwitches = safeInputInt (sc);
+		sc.nextLine ();
+		System.out.println ("введите кол-во светильников (шт.): ");
+		roomLamps = safeInputInt (sc);
+		sc.nextLine ();
 		System.out.println ("Введите количество розеток (шт.):");
 		roomNumberSockets = safeInputInt (sc);
 		sc.nextLine ();
@@ -145,6 +160,8 @@ public class Apartment {
 		distanceBetweenRooms = safeInputDouble (sc);
 		sc.nextLine ();
 		cableLengthInsideRoom = calculateCableLengthInsideRoom (roomPerimeter, roomNumberSockets, distanceBetweenRooms);
+		roomCableSwitches = roomSwitches * roomPerimeter;
+		roomCableLamps = roomLamps * roomPerimeter;
 
 		//ВОДА
 		int roomWaterSockets = 0;
@@ -158,7 +175,7 @@ public class Apartment {
 		}
 		// Итоги по комнате
 		printRoomDetails (writer,roomName, floorArea, wallArea, roomPerimeter, roomWindowsArea, roomWindowsSlopeLength,
-			roomDoorsArea, roomDoorsSlopeLength, roomNumberSockets, cableLengthInsideRoom, roomWaterPipeLength, roomWaterSockets);
+			roomDoorsArea, roomDoorsSlopeLength, roomSwitches, roomCableSwitches, roomLamps, roomCableLamps, roomNumberSockets, cableLengthInsideRoom, roomWaterPipeLength, roomWaterSockets);
 
 
 		// Суммируем общие данные
@@ -170,6 +187,10 @@ public class Apartment {
 		totalWindowsSlopeLength += roomWindowsSlopeLength;
 		totalDoorsArea += roomDoorsArea;
 		totalDoorsSlopeLength += roomDoorsSlopeLength;
+		totalSwitches += roomSwitches;
+		totalCableSwitches += roomCableSwitches;
+		totalLamps += roomLamps;
+		totalCableLamps += roomCableLamps;
 		totalNumberOfSockets += roomNumberSockets;
 		totalCableLength += cableLengthInsideRoom;
 		totalWaterSockets += roomWaterSockets;
@@ -179,7 +200,7 @@ public class Apartment {
 	  // Итоговый отчет
 	  printApartmentDetails ( writer,apartmentName, totalApartmentArea, totalFloorArea,
 		  totalWallArea, totalApartmentPerimeter, totalWindowsArea, totalWindowsSlopeLength,
-		  totalDoorsArea, totalDoorsSlopeLength, totalNumberOfSockets, totalCableLength,
+		  totalDoorsArea, totalDoorsSlopeLength,  totalSwitches, totalCableSwitches, totalLamps, totalCableLamps, totalNumberOfSockets, totalCableLength,
 		  totalWaterSockets, totalWaterPipeLength);
 
 
@@ -299,7 +320,7 @@ public class Apartment {
 
   private static void printRoomDetails ( PrintWriter writer, String roomName, double floorArea, double wallArea,
 										 double roomPerimeter, double roomWindowsArea, double roomWindowsSlopeLength,
-										 double roomDoorsArea, double roomDoorsSlopeLength, int roomNumberSockets,
+										 double roomDoorsArea, double roomDoorsSlopeLength, int roomSwitches, double roomCableSwitches, int roomLamps, double roomCableLamps,  int roomNumberSockets,
 										 double cableLengthInsideRoom, double roomWaterPipeLength, double roomWaterSockets)
   {
 
@@ -311,6 +332,10 @@ public class Apartment {
 	writer.println ("Общая длина откосов окон: " + roomWindowsSlopeLength + " м");
 	writer.println ("Общая площадь дверей: " + roomDoorsArea + " м²");
 	writer.println ("Общая длина откосов дверей: " + roomDoorsSlopeLength + " м");
+	writer.println ("Общее количество выключателей: " + roomSwitches);
+	writer.println ("Общая длина кабеля до выключателей: " + roomCableSwitches+ " м");
+	writer.println ("Общее количество светильников: " + roomLamps);
+	writer.println ("Общая длина кабеля до светильников: " + roomCableLamps + " м");
 	writer.println ("Общее количество розеток: " + roomNumberSockets);
 	writer.println ("Общая длина кабеля для всех комнат: " + cableLengthInsideRoom + " м");
 	writer.println ("Общее количество водорозеток: " + roomWaterSockets);
@@ -321,7 +346,7 @@ public class Apartment {
   private static void printApartmentDetails (PrintWriter writer, String apartmentName, double totalApartmentArea, double totalFloorArea,
 											  double totalWallArea, double totalApartmentPerimeter, double totalWindowsArea,
 											  double totalWindowsSlopeLength, double totalDoorsArea,
-											  double totalDoorsSlopeLength, int totalNumberOfSockets,
+											  double totalDoorsSlopeLength, int totalSwitches, double totalCableSwitches, int totalLamps, double totalCableLamps, int totalNumberOfSockets,
 											  double totalCableLength, double totalWaterSockets, double totalWaterPipeLength)
   {
 	writer.println (" КВАРТИРА: " + apartmentName );
@@ -333,6 +358,10 @@ public class Apartment {
 	writer.println ("Общая длина откосов окон: " + totalWindowsSlopeLength + " м");
 	writer.println ("Общая площадь дверей: " + totalDoorsArea + " м²");
 	writer.println ("Общая длина откосов дверей: " + totalDoorsSlopeLength + " м");
+	writer.println ("Общее количество выключателей: " + totalSwitches);
+	writer.println ("Общая длина кабеля до выключателей: " + totalCableSwitches + " м");
+	writer.println ("Общее количество светильников: " + totalLamps);
+	writer.println ("Общая длина кабеля до светильников: " + totalCableLamps + " м");
 	writer.println ("Общее количество розеток: " + totalNumberOfSockets);
 	writer.println ("Общая длина кабеля для всех комнат: " + totalCableLength + " м");
 	writer.println ("Общее количество водорозеток: " + totalWaterSockets);
